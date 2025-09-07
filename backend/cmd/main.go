@@ -1,15 +1,25 @@
 package main
 
 import (
-	"net/http"
-
+	"github.com/jc80800/badminton-chaos/internal/handlers"
 	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 )
 
 func main() {
 	e := echo.New()
-	e.GET("/", func(c echo.Context) error {
-		return c.String(http.StatusOK, "Hello, World!")
-	})
-	e.Logger.Fatal(e.Start(":1323"))
+
+	// Add CORS middleware
+	e.Use(middleware.CORS())
+
+	// Initialize handlers
+	helloHandler := handlers.NewHelloHandler()
+	quoteHandler := handlers.NewQuoteHandler()
+
+	// Routes
+	e.GET("/", helloHandler.Hello)
+	e.GET("/random", quoteHandler.GetRandomQuote)
+
+	// Start server
+	e.Logger.Fatal(e.Start(":8080"))
 }
